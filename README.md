@@ -1,12 +1,12 @@
 # Raven
 Asset Valuation
 
-### Service: NodeJS
+### 🌐 Service: NodeJS
 
-### DB: PostgreSQL
+### 💽 DB: PostgreSQL
 
-### CLI: Rust
+### ⚙️ CLI: Rust
 
-### UI: React
+### 👀 UI: React
 
-### Discord Bot: NodeJS or Java?
+### 👾 Discord Bot: NodeJS or Java?
