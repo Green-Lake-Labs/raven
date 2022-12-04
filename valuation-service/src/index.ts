@@ -3,7 +3,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import path from 'path';
-import evaluatorService from './service/evaluator';
 import importerService from './service/importer';
 import loaderService from './service/loader';
 
@@ -34,14 +33,6 @@ app.get(
 app.get(
     '/importer/financial-data',
     async (req, res) => await importerService.updateFinancialData(req, res),
-);
-
-/**
- * Evaluator
- */
-app.get(
-    '/evaluator/valuation/:symbol',
-    async (req, res) => await evaluatorService.evaluateAssetValuation(req, res),
 );
 
 /**
