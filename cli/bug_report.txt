@@ -1,0 +1,7 @@
+Hydration CLI Run 12-4 Bug Report:
+
+⡗ Hydrating database with all data for all cached firms...  ALIT  (254/6169)
+⡏ Hydrating database with all data for all cached firms...  ALK  (255/6169)
+thread 'main' panicked at 'attempt to add with overflow', src/client/hydrate.rs:38:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+⢹ Hydrating database with all data for all cached firms...cornelius@cornelius-B450M-DS3H:~/Desktop/Raven/cli/target/debug$ export PATH=$PATH:~/Desktop/Raven/cli/target/debug/raven
