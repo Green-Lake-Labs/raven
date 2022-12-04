@@ -1,0 +1,14 @@
+{
+  "name": "discord-service",
+  "version": "0.0.1",
+  "description": "Discord bot",
+  "main": "index.js",
+  "repository": "git@github.com:Green-Lake-Labs/Raven.git",
+  "author": "jpcaulfi <jcaulfield135@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.7.1",
+    "dotenv": "^16.0.3",
+    "ts-node": "^10.9.1"
+  }
+}
