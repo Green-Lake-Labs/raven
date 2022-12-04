@@ -1,0 +1,67 @@
+import axios from 'axios';
+import dotenv from 'dotenv';
+import path from 'path';
+import { 
+    ImportProfileData,
+    ImportHistoricalPriceData,
+    ImportFinancialData,
+} from '../data/import';
+
+dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
+
+const yahooFinanceEndpoint = "https://apidojo-yahoo-finance-v1.p.rapidapi.com";
+
+const rapidApiConfig = {
+    headers: {
+        'X-RapidAPI-Host': 'apidojo-yahoo-finance-v1.p.rapidapi.com',
+        'X-RapidAPI-Key': process.env.X_RAPIDAPI_KEY,
+    }
+}
+
+export async function fetchProfile(
+    symbol: string,
+): Promise<ImportProfileData> {
+    return await axios
+        .get(
+            yahooFinanceEndpoint + '/stock/v2/get-profile',
+            {
+                params: {
+                    'symbol': symbol,
+                },
+                ...rapidApiConfig,
+            },
+        )
+        .then(res => res.data);
+}
+
+export async function fetchHistoricalPriceData(
+    symbol: string,
+): Promise<ImportHistoricalPriceData> {
+    return await axios
+        .get(
+            yahooFinanceEndpoint + '/stock/v3/get-historical-data',
+            {
+                params: {
+                    'symbol': symbol,
+                },
+                ...rapidApiConfig,
+            },
+        )
+        .then(res => res.data);
+}
+
+export async function fetchFinancialData(
+    symbol: string,
+): Promise<ImportFinancialData> {
+    return await axios
+        .get(
+            yahooFinanceEndpoint + '/stock/v2/get-balance-sheet',
+            {
+                params: {
+                    'symbol': symbol,
+                },
+                ...rapidApiConfig,
+            },
+        )
+        .then(res => res.data);
+}
