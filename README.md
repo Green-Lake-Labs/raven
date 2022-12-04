@@ -2,7 +2,7 @@
 
 ### 🌐 Service: NodeJS
 
-### 💽 DB: PostgreSQL
+### 💽 DB: MongoDB
 
 ### ⚙️ CLI: Rust
 
