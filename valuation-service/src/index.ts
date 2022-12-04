@@ -39,16 +39,20 @@ app.get(
  * Loader
  */
 app.get(
-    '/loader/profile/:symbol',
-    async (req, res) => await loaderService.loadProfile(req, res),
+    '/loader/profile',
+    async (req, res) => await loaderService.loadProfileData(req, res),
 );
 app.get(
-    '/loader/valuation/:symbol',
-    async (req, res) => await loaderService.loadAssetValuation(req, res),
+    '/loader/historical-price-data',
+    async (req, res) => await loaderService.loadHistoricalPriceData(req, res),
+);
+app.get(
+    '/loader/financial-data',
+    async (req, res) => await loaderService.loadFinancialData(req, res),
 );
 
 app.listen(port, () => {
     console.log();
-    console.log(`Raven Valuation Service launched.`)
+    console.log(`Raven Service launched.`)
     console.log(`   Listening on port ${port}...`)
 });

@@ -21,6 +21,8 @@ export interface HistoricalEventsDataItem {
     data: string;
 }
 
+// -------------------------------------------------------------------------
+
 export interface ImportHistoricalPriceData {
     prices: HistoricalPriceDataItem[];
     isPending: boolean;
@@ -28,4 +30,8 @@ export interface ImportHistoricalPriceData {
     id: string;
     timeZone: TimeZoneObject;
     eventsData: HistoricalEventsDataItem[];
+}
+
+export interface ImportHistoricalPriceDataDto extends ImportHistoricalPriceData {
+    symbol: string;
 }

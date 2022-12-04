@@ -213,6 +213,7 @@ export interface TimeSeriesFinancialData {
 // -------------------------------------------------------------------------
 
 export interface ImportFinancialData {
+    symbol: string;
     financialsTemplate: FinancialsTemplateData;
     cashflowStatementHistory: CashFlowStatementHistoryYearlyData;
     cashflowStatementHistoryQuarterly: CashFlowStatementHistoryQuarterlyData;
