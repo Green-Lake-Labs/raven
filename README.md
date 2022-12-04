@@ -1,5 +1,4 @@
-# Raven
-Asset Valuation
+# :bird: Raven
 
 ### 🌐 Service: NodeJS
 
@@ -9,4 +8,4 @@ Asset Valuation
 
 ### 👀 UI: React
 
-### 👾 Discord Bot: NodeJS or Java?
+### 👾 Discord Bot: NodeJS
