@@ -20,48 +20,60 @@ const rapidApiConfig = {
 
 export async function fetchProfile(
     symbol: string,
-): Promise<ImportProfileData> {
-    return await axios
-        .get(
-            yahooFinanceEndpoint + '/stock/v2/get-profile',
-            {
-                params: {
-                    'symbol': symbol,
+): Promise<ImportProfileData | null> {
+    try {
+        return await axios
+            .get(
+                yahooFinanceEndpoint + '/stock/v2/get-profile',
+                {
+                    params: {
+                        'symbol': symbol,
+                    },
+                    ...rapidApiConfig,
                 },
-                ...rapidApiConfig,
-            },
-        )
-        .then(res => res.data);
+            )
+            .then(res => res.data);
+    } catch (err) {
+        return null;
+    }
 }
 
 export async function fetchHistoricalPriceData(
     symbol: string,
-): Promise<ImportHistoricalPriceData> {
-    return await axios
-        .get(
-            yahooFinanceEndpoint + '/stock/v3/get-historical-data',
-            {
-                params: {
-                    'symbol': symbol,
+): Promise<ImportHistoricalPriceData | null> {
+    try {
+        return await axios
+            .get(
+                yahooFinanceEndpoint + '/stock/v3/get-historical-data',
+                {
+                    params: {
+                        'symbol': symbol,
+                    },
+                    ...rapidApiConfig,
                 },
-                ...rapidApiConfig,
-            },
-        )
-        .then(res => res.data);
+            )
+            .then(res => res.data);
+    } catch (err) {
+        return null;
+    }
 }
 
 export async function fetchFinancialData(
     symbol: string,
-): Promise<ImportFinancialData> {
-    return await axios
-        .get(
-            yahooFinanceEndpoint + '/stock/v2/get-balance-sheet',
-            {
-                params: {
-                    'symbol': symbol,
+): Promise<ImportFinancialData | null> {
+    try {
+        return await axios
+            .get(
+                yahooFinanceEndpoint + '/stock/v2/get-balance-sheet',
+                {
+                    params: {
+                        'symbol': symbol,
+                    },
+                    ...rapidApiConfig,
                 },
-                ...rapidApiConfig,
-            },
-        )
-        .then(res => res.data);
+            )
+            .then(res => res.data);
+    } catch (err) {
+        return null;
+    }
 }
