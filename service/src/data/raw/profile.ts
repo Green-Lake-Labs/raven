@@ -6,7 +6,7 @@ import {
     QuoteTypeData,
     ShortFormNumberDataItem,
     SummaryDetailData,
-} from './shared';
+} from '.';
 
 export interface SecFilingDataItem {
     date: string;

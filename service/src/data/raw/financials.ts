@@ -7,7 +7,7 @@ import {
     QuoteTypeData,
     ShortFormNumberDataItem,
     SummaryDetailData,
-} from './shared';
+} from '.';
 
 // Cash Flows
 

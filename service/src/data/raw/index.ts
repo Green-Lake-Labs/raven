@@ -1,3 +1,7 @@
+export * from './financials';
+export * from './historical-price-data';
+export * from './profile';
+
 export interface FinancialsTemplateData {
     code: string;
     maxAge: number;

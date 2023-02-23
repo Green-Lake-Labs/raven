@@ -1,9 +1,11 @@
+use serde_json::to_string_pretty;
 use spinners::{Spinner, Spinners};
 
 use crate::Cli;
 use crate::client::{
+    get::get,
     hydrate::hydrate,
-    import::import,
+    update::update,
 };
 use crate::raven_cli::RavenCommand;
 
@@ -13,16 +15,29 @@ fn create_spinner(msg: String) -> Spinner {
 
 pub async fn processor(cli: Cli) -> Result<(), Box<dyn std::error::Error>> {
     match &cli.command {
-        RavenCommand::Import(args) => {
+        RavenCommand::Get(args) => {
             let symbol = &args.symbol;
             let data_type = &args.data;
             let mut sp = create_spinner(
-                format!("Importing {} data for {}...", 
+                format!("Fetching {} data for {}...", 
                     data_type, 
                     symbol
                 )
             );
-            import(data_type, symbol).await?;
+            let res = get(data_type, symbol).await?;
+            sp.stop();
+            println!("{:?}", to_string_pretty(&res));
+        },
+        RavenCommand::Import(args) => {
+            let symbol = &args.symbol;
+            let data_type = &args.data;
+            let mut sp = create_spinner(
+                format!("Importing new {} data for {}...", 
+                    data_type, 
+                    symbol
+                )
+            );
+            update(data_type, symbol).await?;
             sp.stop();
         },
         RavenCommand::Hydrate(args) => {
@@ -32,7 +47,10 @@ pub async fn processor(cli: Cli) -> Result<(), Box<dyn std::error::Error>> {
                     data_type,
                 )
             );
-            hydrate(data_type).await?;
+            hydrate(
+                data_type,
+                args.revive_last,
+            ).await?;
             sp.stop();
         }
     };

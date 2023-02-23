@@ -5,7 +5,7 @@ import {
     ImportProfileData,
     ImportHistoricalPriceData,
     ImportFinancialData,
-} from '../data/import';
+} from '../data/raw';
 
 dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 

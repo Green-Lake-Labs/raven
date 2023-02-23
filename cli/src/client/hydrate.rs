@@ -1,16 +1,50 @@
-use std::{ thread, time };
-use crate::client::import::{
-    import_all_data,
-    import_historical_price_data,
-    import_financial_data,
-    import_profile_data,
+extern crate regex;
+use home::home_dir;
+use regex::Regex;
+use std::{ 
+    fs::{File, remove_file},
+    io::{Write, Read},
+    thread, 
+    time, path::Path 
+};
+use crate::client::update::{
+    update_all_data,
+    update_historical_price_data,
+    update_financial_data,
+    update_profile_data,
 };
 
-use crate::raven_cli::DataType;
+use crate::raven_cli::ImportDataType;
 
+const SAVE_LAST_SYMBOL_FILE: &'static str = ".raven.conf";
 const SLEEP_INTERVAL_SECONDS: u64 = 5;
 
-fn output_remaining_time(index: u8, total_tickers: usize) {
+pub async fn hydrate(data_type: &ImportDataType, revive: bool) -> Result<String, Box<dyn std::error::Error>> {
+    println!();
+    let sleep_interval = time::Duration::from_secs(SLEEP_INTERVAL_SECONDS);
+    let all_tickers = match revive {
+        true => get_clipped_tickers(),
+        false => get_all_tickers(),
+    };
+    let total_tickers = all_tickers.len();
+    let mut x: u32 = 1;
+    for symbol in all_tickers {
+        match data_type {
+            ImportDataType::All => save_on_fail(update_all_data(&symbol).await, symbol)?,
+            ImportDataType::Financial => save_on_fail(update_financial_data(&symbol).await, symbol)?,
+            ImportDataType::Price => save_on_fail(update_historical_price_data(&symbol).await, symbol)?,
+            ImportDataType::Profile => save_on_fail(update_profile_data(&symbol).await, symbol)?,
+        };
+        println!("  {}  ({}/{})", &symbol, x, total_tickers);
+        if x % 30 == 0 { output_remaining_time(x, total_tickers) };
+        x+=1;
+        thread::sleep(sleep_interval);
+    };
+    try_clear_last_symbol();
+    Ok(format!("Hydration of {} data finished.", data_type))
+}
+
+fn output_remaining_time(index: u32, total_tickers: usize) {
     let predicted_elapsed = total_tickers as u64 * SLEEP_INTERVAL_SECONDS;
     let remaining_elapsed = predicted_elapsed as f64 * (1.0 - (index as f64 / total_tickers as f64));
     println!(
@@ -20,25 +54,60 @@ fn output_remaining_time(index: u8, total_tickers: usize) {
     );
 }
 
-pub async fn hydrate(data_type: &DataType) -> Result<String, Box<dyn std::error::Error>> {
-    println!();
-    let sleep_interval = time::Duration::from_secs(SLEEP_INTERVAL_SECONDS);
-    let all_tickers = get_all_tickers();
-    let total_tickers = all_tickers.len();
-    let mut x = 1;
-    for symbol in all_tickers {
-        match data_type {
-            DataType::All => import_all_data(&symbol).await?,
-            DataType::Financial => import_financial_data(&symbol).await?,
-            DataType::Price => import_historical_price_data(&symbol).await?,
-            DataType::Profile => import_profile_data(&symbol).await?,
-        };
-        println!("  {}  ({}/{})", &symbol, x, total_tickers);
-        if x % 30 == 0 { output_remaining_time(x, total_tickers) };
-        x+=1;
-        thread::sleep(sleep_interval);
+fn save_on_fail<'a>(res: Result<String, Box<dyn std::error::Error>>, symbol: &'a str) -> Result<String, Box<dyn std::error::Error>> {
+    match res {
+        Ok(arg) => Ok(arg),
+        Err(e) => {
+            let mut file = File::create(home_dir().unwrap().join(Path::new(SAVE_LAST_SYMBOL_FILE)))?;
+            file.write_all(format!("last_known_symbol={}", symbol).as_bytes())?;
+            Err(e)
+        }
+    }
+}
+
+pub fn try_clear_last_symbol() {
+    match remove_file(SAVE_LAST_SYMBOL_FILE) {
+        Ok(()) => (),
+        Err(_) => ()
     };
-    Ok(format!("Hydration of {} data finished.", data_type))
+}
+
+pub fn try_load_last_symbol(all_tickers: &Vec<&str>) -> std::io::Result<usize> {
+    let re : Regex = Regex::new(r"last_known_symbol(\s+)?=(\s+)?[a-zA-Z0-9]{1,}").unwrap();
+    let mut file = File::open(SAVE_LAST_SYMBOL_FILE)?;
+    let mut contents = String::new();
+	file.read_to_string(&mut contents)?;
+    match re.captures(&contents) {
+        Some(matched) => {
+            let symbol = matched[1].split("=").collect::<Vec<&str>>()[1].trim();
+            match all_tickers.iter().position(|&r| r == symbol) {
+                Some(i) => Ok(i),
+                None => Err(
+                    std::io::Error::new(
+                        std::io::ErrorKind::NotFound, 
+                        "Error: previously logged ticker not found in cache list."
+                    )
+                ),
+            }
+        },
+        None => Err(
+            std::io::Error::new(
+                std::io::ErrorKind::NotFound, 
+                "Error: failed to read previously logged ticker."
+            )
+        ),
+    }
+}
+
+pub fn get_clipped_tickers() -> Vec<&'static str> {
+    let all_tickers = get_all_tickers();
+    match try_load_last_symbol(&all_tickers) {
+        Ok(start_index) => all_tickers[start_index..].to_vec(),
+        Err(_) => {
+            println!("Error reading from save file, hydration will start from the beginning.");
+            all_tickers
+        },
+    }
 }
 
 pub fn get_all_tickers() -> Vec<&'static str> {

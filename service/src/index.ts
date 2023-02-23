@@ -3,8 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import path from 'path';
-import importerService from './service/importer';
-import loaderService from './service/loader';
+import renderService from './service/render';
+import updateService from './service/update';
 
 dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 
@@ -20,35 +20,35 @@ app.use(
 );
 
 /**
- * Importer
+ * Render
  */
 app.get(
-    '/importer/profile',
-    async (req, res) => await importerService.updateProfileData(req, res),
+    '/render/profile',
+    async (req, res) => await renderService.loadProfileData(req, res),
 );
 app.get(
-    '/importer/historical-price-data',
-    async (req, res) => await importerService.updateHistoricalPriceData(req, res),
+    '/render/historical-price-data',
+    async (req, res) => await renderService.loadHistoricalPriceData(req, res),
 );
 app.get(
-    '/importer/financial-data',
-    async (req, res) => await importerService.updateFinancialData(req, res),
+    '/render/financial-data',
+    async (req, res) => await renderService.loadFinancialData(req, res),
 );
 
 /**
- * Loader
+ * Update
  */
 app.get(
-    '/loader/profile',
-    async (req, res) => await loaderService.loadProfileData(req, res),
+    '/update/profile',
+    async (req, res) => await updateService.updateProfileData(req, res),
 );
 app.get(
-    '/loader/historical-price-data',
-    async (req, res) => await loaderService.loadHistoricalPriceData(req, res),
+    '/update/historical-price-data',
+    async (req, res) => await updateService.updateHistoricalPriceData(req, res),
 );
 app.get(
-    '/loader/financial-data',
-    async (req, res) => await loaderService.loadFinancialData(req, res),
+    '/update/financial-data',
+    async (req, res) => await updateService.updateFinancialData(req, res),
 );
 
 app.listen(port, () => {

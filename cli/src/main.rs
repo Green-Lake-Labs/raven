@@ -8,6 +8,7 @@ use crate::raven_cli::{
     RavenCommand, 
 };
 
+const RAVEN_URL: &str = "http://localhost:3002";
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
